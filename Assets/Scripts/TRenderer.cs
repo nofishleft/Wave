@@ -19,6 +19,7 @@ namespace nz.rishaan.DynamicCuboidTerrain
 
         public float asympConst = 0.9f;
         public float speed = 14f;
+
         Vector3 desiredCamPos = new Vector3();
 
         public int mapSize;
@@ -39,33 +40,127 @@ namespace nz.rishaan.DynamicCuboidTerrain
 
         void Update()
         {
-            Vector3 dir = GetInputTranslationDirection();
-            if (dir.sqrMagnitude > 0)
-            {
-                move(dir);
-            }
+                // move(dir);
+            move2();
             accumTime += scrollSpeed * Time.deltaTime;
             map.procGen(mapSize, mapSize, player.x - 0.5f * renderRange + accumTime, player.z - 0.5f * renderRange);
             updateHeights();
-            float y = map.heightMap[-cuboids.GetLength(0) / 2 + (int)(player.x) + (int)Mathf.Round(player.obj.transform.position.x), -cuboids.GetLength(1) / 2 + (int)player.z + (int)Mathf.Round(player.obj.transform.position.z)];
-            Vector3 a = new Vector3(player.obj.transform.position.x, 0, player.obj.transform.position.z);
-            Vector3 b = new Vector3((int)player.gloPos.x,0,(int)player.gloPos.z);
-            a = 0.1f * a + 0.9f * b - a;
-            player.obj.transform.position += a * 10f * Time.deltaTime;
-            player.obj.transform.position += new Vector3(0,0.01f*player.obj.transform.position.y + 0.99f * y- player.obj.transform.position.y, 0)*10f*Time.deltaTime;
+            //float y = map.heightMap[-cuboids.GetLength(0) / 2 + (int)(player.x) + (int)Mathf.Round(player.obj.transform.position.x), -cuboids.GetLength(1) / 2 + (int)player.z + (int)Mathf.Round(player.obj.transform.position.z)];
+            //player.obj.transform.position += new Vector3(0, 0.1f * player.obj.transform.position.y + 0.9f * y - player.obj.transform.position.y, 0) * 10f * Time.deltaTime;
             desiredCamPos = player.obj.transform.position + new Vector3(-20, 20, -20);
             cam.position += (((1 - asympConst) * cam.position + asympConst * desiredCamPos) - cam.position) * camSpeed * Time.deltaTime;
-            
+
+        }
+
+        public Transform front;
+        public Transform back;
+        public Transform left;
+        public Transform right;
+        public Transform horRot;
+        public Transform vertRot;
+        public Transform lrRot;
+        public Transform mid;
+        public float turnSpeed = 90f;
+        float cSpeed = 0f;
+        float maxSpeed = 50f;
+        public float boatLength = 1f;
+
+        void move2()
+        {
+            int forback = 0;
+            if (Input.GetKey(KeyCode.W))
+            {
+                ++forback;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                --forback;
+            }
+            if (forback != 0) {
+                int dir = 0;
+                if (Input.GetKey(KeyCode.A))
+                {
+                    --dir;
+                }
+                if (Input.GetKey(KeyCode.D))
+                {
+                    ++dir;
+                }
+
+                horRot.RotateAround(horRot.position, horRot.up, dir * turnSpeed * Time.deltaTime);
+
+                Vector3 v1 = front.localPosition;
+                v1.y = cuboids[(int)front.position.x, (int)front.position.z].position.y + cuboids[(int)front.position.x, (int)front.position.z].localScale.y;
+                front.localPosition = v1;
+                Vector3 v2 = back.localPosition;
+                v2.y = cuboids[(int)back.position.x, (int)back.position.z].position.y + cuboids[(int)back.position.x, (int)back.position.z].localScale.y;
+                back.localPosition = v2;
+                Vector3 v3 = left.localPosition;
+                v3.y = cuboids[(int)left.position.x, (int)left.position.z].position.y + cuboids[(int)left.position.x, (int)left.position.z].localScale.y;
+                left.localPosition = v3;
+                Vector3 v4 = right.localPosition;
+                v4.y = cuboids[(int)right.position.x, (int)right.position.z].position.y + cuboids[(int)right.position.x, (int)right.position.z].localScale.y;
+                right.localPosition = v4;
+                Vector3 v5 = mid.localPosition;
+                v5.y = (v1.y + v2.y + v3.y + v4.y) / 4;
+                mid.localPosition = v5;
+
+                float deg = Mathf.Atan2(v1.y-v2.y, boatLength) * Mathf.Rad2Deg;
+                //float dir2 = Mathf.Sign();
+                //vertRot.RotateAround(vertRot.position, vertRot.forward, (v1.y - v2.y) * turnSpeed * Time.deltaTime);
+                Vector3 euler = vertRot.localEulerAngles;
+                euler.z = deg;
+                vertRot.localEulerAngles = euler;
+
+                cSpeed = Mathf.Clamp(cSpeed + (forback * 5f * Time.deltaTime),-maxSpeed,maxSpeed);
+                Vector3 targetFor = (vertRot.rotation * Vector3.right) * cSpeed * Time.deltaTime;
+                player.obj.transform.position += targetFor;
+
+            } else {
+                Vector3 v1 = front.localPosition;
+                v1.y = cuboids[(int)front.position.x, (int)front.position.z].position.y + cuboids[(int)front.position.x, (int)front.position.z].localScale.y;
+                front.localPosition = v1;
+                Vector3 v2 = back.localPosition;
+                v2.y = cuboids[(int)back.position.x, (int)back.position.z].position.y + cuboids[(int)back.position.x, (int)back.position.z].localScale.y;
+                back.localPosition = v2;
+                Vector3 v3 = left.localPosition;
+                v3.y = cuboids[(int)left.position.x, (int)left.position.z].position.y + cuboids[(int)left.position.x, (int)left.position.z].localScale.y;
+                left.localPosition = v3;
+                Vector3 v4 = right.localPosition;
+                v4.y = cuboids[(int)right.position.x, (int)right.position.z].position.y + cuboids[(int)right.position.x, (int)right.position.z].localScale.y;
+                right.localPosition = v4;
+                Vector3 v5 = mid.localPosition;
+                v5.y = (v1.y + v2.y + v3.y + v4.y) / 4;
+                mid.localPosition = v5;
+
+                float deg = Mathf.Atan2(v1.y - v2.y, boatLength) * Mathf.Rad2Deg;
+                //float dir2 = Mathf.Sign();
+                //vertRot.RotateAround(vertRot.position, vertRot.forward, (v1.y - v2.y) * turnSpeed * Time.deltaTime);
+                Vector3 euler = vertRot.localEulerAngles;
+                euler.z = 0.5f*deg;
+                vertRot.localEulerAngles = euler;
+
+                if (cSpeed > 0)
+                {
+                    cSpeed = Mathf.Clamp(cSpeed - (1f * Time.deltaTime), 0, maxSpeed);
+                }
+                else if (cSpeed < 0) {
+                    cSpeed = Mathf.Clamp(cSpeed + (1f * Time.deltaTime), -maxSpeed, 0);
+                }
+                
+                Vector3 targetFor = (vertRot.rotation * Vector3.right) * cSpeed * Time.deltaTime;
+                player.obj.transform.position += targetFor;
+            }
         }
 
         void move(Vector3 dir)
         {
             dir = player.gloPos + dir;
-            dir.x = Mathf.Clamp(dir.x, 0f, renderRange-1);
-            dir.z = Mathf.Clamp(dir.z, 0f, renderRange-1);
+            dir.x = Mathf.Clamp(dir.x, 0f, renderRange - 1);
+            dir.z = Mathf.Clamp(dir.z, 0f, renderRange - 1);
             player.gloPos = dir;
             Debug.Log(dir.x);
-            
+
 
             /*
             player.position += dir;
@@ -75,13 +170,15 @@ namespace nz.rishaan.DynamicCuboidTerrain
             */
         }
 
-        void add(Vector3 v) {
+        void add(Vector3 v)
+        {
             int i = lastdirection.IndexOf(v);
             if (i >= 0) lastdirection.RemoveAt(i);
             lastdirection.Add(v);
         }
 
-        void remove(Vector3 v) {
+        void remove(Vector3 v)
+        {
             int i = lastdirection.IndexOf(v);
             if (i >= 0) lastdirection.RemoveAt(i);
         }
@@ -128,7 +225,7 @@ namespace nz.rishaan.DynamicCuboidTerrain
             {
                 direction += Vector3.up;
             }*/
-            direction = lastdirection.ElementAt<Vector3>(lastdirection.Count-1);
+            direction = lastdirection.ElementAt<Vector3>(lastdirection.Count - 1);
             direction.Normalize();
             return direction * speed * Time.deltaTime;
         }
@@ -168,7 +265,7 @@ namespace nz.rishaan.DynamicCuboidTerrain
             //p.AddComponent<Material>();
             updateHeights();
             int loc = renderRange / 2;
-            player.obj.transform.position = new Vector3(loc, cuboids[loc, loc].position.y + 1, loc);
+            player.obj.transform.position = new Vector3(loc, cuboids[loc, loc].position.y + 10, loc);
         }
 
         /*Spherical render range
@@ -179,11 +276,12 @@ namespace nz.rishaan.DynamicCuboidTerrain
         float renderRangeSqrd;*/
 
 
-        public void CreateBetweenTwo(Transform transform, float top, float bot) {
+        public void CreateBetweenTwo(Transform transform, float top, float bot)
+        {
             Vector3 v = transform.position;
             v.y = 0.5f * top + 0.5f * bot;
             transform.position = v;
-            transform.localScale = new Vector3(1f, (top-bot), 1f);
+            transform.localScale = new Vector3(1f, (top - bot), 1f);
         }
 
         //Call on movement not on frame update
@@ -203,17 +301,17 @@ namespace nz.rishaan.DynamicCuboidTerrain
                     //if (temp < 10) {
                     float relHeight = map.heightMap[-X / 2 + x + (int)(player.x), -Z / 2 + z + (int)player.z] - 0.5f;
                     //relHeight += Mathf.Clamp(temp,0,10);
-                    float scale = Mathf.Max(relHeight - map.minHeight,minBlockSize);
+                    float scale = Mathf.Max(relHeight - map.minHeight, minBlockSize);
                     relHeight = relHeight - 0.5f * scale;
                     //Instantaneous
                     groundCuboids[x, z].localPosition = new Vector3(x, relHeight - 5f, z);
-                    CreateBetweenTwo(groundCuboids[x, z], relHeight - scale/2, -10f);
+                    CreateBetweenTwo(groundCuboids[x, z], relHeight - scale / 2, -10f);
 
                     cuboids[x, z].localPosition = new Vector3(x, relHeight, z);
                     cuboids[x, z].localScale = new Vector3(1, scale, 1);
 
-                    
-                    
+
+
                     //}
                     //Asymptotic Averaging
                     //float max = speed * Time.deltaTime;
@@ -228,6 +326,9 @@ namespace nz.rishaan.DynamicCuboidTerrain
                         + (1-asympConst)*cuboids[x,z].localScale.y,1f);*/
                 }
             }
+            //float y = player.obj.transform.position.y;
+            //float dest = map.heightMap[-X / 2 + (int)(player.x) - (int)player.obj.transform.position.x, -Z / 2 + (int)player.z - (int)player.obj.transform.position.x];
+            
             //int loc = renderRange / 2;
             //player.obj.transform.position = new Vector3(loc, cuboids[loc, loc].position.y + 1, loc);
             //player.obj.transform.position = new Vector3(0,player.height + 1,0);
