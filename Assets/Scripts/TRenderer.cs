@@ -40,7 +40,8 @@ namespace nz.rishaan.DynamicCuboidTerrain
 
         void Update()
         {
-                // move(dir);
+            //horRot.RotateAround(horRot.position, horRot.up, turnSpeed * Time.deltaTime);
+            // move(dir);
             move2();
             accumTime += scrollSpeed * Time.deltaTime;
             map.procGen(mapSize, mapSize, player.x - 0.5f * renderRange + accumTime, player.z - 0.5f * renderRange);
@@ -52,10 +53,6 @@ namespace nz.rishaan.DynamicCuboidTerrain
 
         }
 
-        public Transform front;
-        public Transform back;
-        public Transform left;
-        public Transform right;
         public Transform horRot;
         public Transform vertRot;
         public Transform lrRot;
@@ -67,6 +64,47 @@ namespace nz.rishaan.DynamicCuboidTerrain
 
         void move2()
         {
+            int dir = 0;
+            Vector3 v = horRot.eulerAngles;
+            if (Input.GetKey(KeyCode.A))
+            {
+                
+                --dir;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                
+                ++dir;
+            }
+            if (dir > 0)
+            {
+                if (v.y >= 180) v.y = Mathf.Min(v.y + (0.9f * (405f) + 0.1f * v.y - v.y) * turnSpeed * Time.deltaTime, 405);
+                else v.y = Mathf.Min(v.y + (0.9f * (45f) + 0.1f * v.y - v.y) * turnSpeed * Time.deltaTime, 45);
+            }
+            else if (dir < 0)
+            {
+                if (v.y > 180) v.y = Mathf.Max(v.y + (0.9f * (315f) + 0.1f * v.y - v.y) * turnSpeed * Time.deltaTime, 315);
+                else if (v.y >= 0) v.y = Mathf.Max(v.y + (0.9f * (-45f) + 0.1f * v.y - v.y) * turnSpeed * Time.deltaTime, -45);
+            }
+            else {
+                if (v.y < 90 && v.y > 0) v.y = Mathf.Max(0.1f * v.y * turnSpeed * Time.deltaTime, 0);
+                else if (v.y < 0) v.y = Mathf.Min(0.1f * v.y * turnSpeed * Time.deltaTime, 0);
+                else v.y = Mathf.Min(v.y + (0.9f * (360f) + 0.1f * v.y - v.y) * turnSpeed * Time.deltaTime, 0);
+            }
+            
+
+            //Debug.Log(v.y);
+
+            if (dir == 0)
+            {
+                
+            }
+            horRot.eulerAngles = v;
+
+            //if (v.y < 0) v.y = Mathf.Clamp(v.y * Time.deltaTime, -180, -90);
+            
+
+
             int forback = 0;
             if (Input.GetKey(KeyCode.W))
             {
@@ -77,70 +115,11 @@ namespace nz.rishaan.DynamicCuboidTerrain
                 --forback;
             }
             if (forback != 0) {
-                int dir = 0;
-                if (Input.GetKey(KeyCode.A))
-                {
-                    --dir;
-                }
-                if (Input.GetKey(KeyCode.D))
-                {
-                    ++dir;
-                }
-
-                horRot.RotateAround(horRot.position, horRot.up, dir * turnSpeed * Time.deltaTime);
-
-                Vector3 v1 = front.localPosition;
-                v1.y = cuboids[(int)front.position.x, (int)front.position.z].position.y + cuboids[(int)front.position.x, (int)front.position.z].localScale.y;
-                front.localPosition = v1;
-                Vector3 v2 = back.localPosition;
-                v2.y = cuboids[(int)back.position.x, (int)back.position.z].position.y + cuboids[(int)back.position.x, (int)back.position.z].localScale.y;
-                back.localPosition = v2;
-                Vector3 v3 = left.localPosition;
-                v3.y = cuboids[(int)left.position.x, (int)left.position.z].position.y + cuboids[(int)left.position.x, (int)left.position.z].localScale.y;
-                left.localPosition = v3;
-                Vector3 v4 = right.localPosition;
-                v4.y = cuboids[(int)right.position.x, (int)right.position.z].position.y + cuboids[(int)right.position.x, (int)right.position.z].localScale.y;
-                right.localPosition = v4;
-                Vector3 v5 = mid.localPosition;
-                v5.y = (v1.y + v2.y + v3.y + v4.y) / 4;
-                mid.localPosition = v5;
-
-                float deg = Mathf.Atan2(v1.y-v2.y, boatLength) * Mathf.Rad2Deg;
-                //float dir2 = Mathf.Sign();
-                //vertRot.RotateAround(vertRot.position, vertRot.forward, (v1.y - v2.y) * turnSpeed * Time.deltaTime);
-                Vector3 euler = vertRot.localEulerAngles;
-                euler.z = deg;
-                vertRot.localEulerAngles = euler;
-
-                cSpeed = Mathf.Clamp(cSpeed + (forback * 5f * Time.deltaTime),-maxSpeed,maxSpeed);
-                Vector3 targetFor = (vertRot.rotation * Vector3.right) * cSpeed * Time.deltaTime;
-                player.obj.transform.position += targetFor;
-
+                cSpeed = Mathf.Clamp(cSpeed + (forback * 5f * Time.deltaTime), -maxSpeed, maxSpeed);
+                //Vector3 targetFor = (vertRot.rotation * Vector3.right) * cSpeed * Time.deltaTime;
+                //player.obj.transform.position += targetFor;
             } else {
-                Vector3 v1 = front.localPosition;
-                v1.y = cuboids[(int)front.position.x, (int)front.position.z].position.y + cuboids[(int)front.position.x, (int)front.position.z].localScale.y;
-                front.localPosition = v1;
-                Vector3 v2 = back.localPosition;
-                v2.y = cuboids[(int)back.position.x, (int)back.position.z].position.y + cuboids[(int)back.position.x, (int)back.position.z].localScale.y;
-                back.localPosition = v2;
-                Vector3 v3 = left.localPosition;
-                v3.y = cuboids[(int)left.position.x, (int)left.position.z].position.y + cuboids[(int)left.position.x, (int)left.position.z].localScale.y;
-                left.localPosition = v3;
-                Vector3 v4 = right.localPosition;
-                v4.y = cuboids[(int)right.position.x, (int)right.position.z].position.y + cuboids[(int)right.position.x, (int)right.position.z].localScale.y;
-                right.localPosition = v4;
-                Vector3 v5 = mid.localPosition;
-                v5.y = (v1.y + v2.y + v3.y + v4.y) / 4;
-                mid.localPosition = v5;
-
-                float deg = Mathf.Atan2(v1.y - v2.y, boatLength) * Mathf.Rad2Deg;
-                //float dir2 = Mathf.Sign();
-                //vertRot.RotateAround(vertRot.position, vertRot.forward, (v1.y - v2.y) * turnSpeed * Time.deltaTime);
-                Vector3 euler = vertRot.localEulerAngles;
-                euler.z = 0.5f*deg;
-                vertRot.localEulerAngles = euler;
-
-                if (cSpeed > 0)
+                /*if (cSpeed > 0)
                 {
                     cSpeed = Mathf.Clamp(cSpeed - (1f * Time.deltaTime), 0, maxSpeed);
                 }
@@ -149,8 +128,10 @@ namespace nz.rishaan.DynamicCuboidTerrain
                 }
                 
                 Vector3 targetFor = (vertRot.rotation * Vector3.right) * cSpeed * Time.deltaTime;
-                player.obj.transform.position += targetFor;
+                player.obj.transform.position += targetFor;*/
             }
+            player.obj.transform.position += new Vector3(0, 0, -dir * cSpeed * Time.deltaTime);
+
         }
 
         void move(Vector3 dir)
