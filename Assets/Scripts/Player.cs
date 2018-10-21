@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace nz.rishaan.DynamicCuboidTerrain
+namespace nz.Rishaan.DynamicCuboidTerrain
 {
 
     public class Player : MonoBehaviour

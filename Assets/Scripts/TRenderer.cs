@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace nz.rishaan.DynamicCuboidTerrain
+namespace nz.Rishaan.DynamicCuboidTerrain
 {
 
     public class TRenderer : MonoBehaviour
@@ -10,17 +10,17 @@ namespace nz.rishaan.DynamicCuboidTerrain
         public Player player;
         public Transform cam;
         public TerrainMap map;
-        public Transform[,] cuboids; //Should always have odd dimensions
+        public static Transform[,] cuboids; //Should always have odd dimensions
 
         public Transform[,] groundCuboids;
 
-        public List <Transform> obstacles;
+        public List<Transform> obstacles;
 
         public GameObject waterPrefab;
         public GameObject groundPrefab;
 
         public float asympConst = 0.9f;
-        public float speed = 14f;
+        public float speed = 10f;
 
         public Transform environment;
         public Transform terrain;
@@ -29,6 +29,7 @@ namespace nz.rishaan.DynamicCuboidTerrain
 
         public int mapSize;
         float accumTime;
+        public static int render;
         public int renderRange;
         public float minBlockSize = 1f;
 
@@ -57,24 +58,27 @@ namespace nz.rishaan.DynamicCuboidTerrain
             cam.position += (((1 - asympConst) * cam.position + asympConst * desiredCamPos) - cam.position) * camSpeed * Time.deltaTime;
             updateObstacles();
             float loc = cuboids[(int)player.obj.transform.position.x, (int)player.obj.transform.position.z].position.y + cuboids[(int)player.obj.transform.position.x, (int)player.obj.transform.position.z].localScale.y / 2 + 1;
-            loc = Mathf.Max(0.9f*loc + 0.1f * player.obj.transform.position.y, loc);
+            loc = Mathf.Max(0.5f * loc + 0.5f * player.obj.transform.position.y, loc);
             player.obj.transform.position = new Vector3(player.obj.transform.position.x, loc, player.obj.transform.position.z);
         }
 
-        void updateObstacles() {
-            for (int i = 0; i < obstacles.Count; ++i) {
-                obstacles[i].localPosition += new Vector3(-scrollSpeed*Time.deltaTime,0,0);
+        void updateObstacles()
+        {
+            for (int i = 0; i < obstacles.Count; ++i)
+            {
+                obstacles[i].localPosition += new Vector3(-scrollSpeed * Time.deltaTime, 0, 0);
             }
         }
 
-        void spawnObstacleRPIR(GameObject prefab) {
-            GameObject obj = Instantiate<GameObject>(prefab, new Vector3(renderRange*2, 0, Random.Range(0,renderRange)), Quaternion.identity, environment);
+        void spawnObstacleRPIR(GameObject prefab)
+        {
+            GameObject obj = Instantiate<GameObject>(prefab, new Vector3(renderRange * 2, 0, Random.Range(0, renderRange)), Quaternion.identity, environment);
             obstacles.Add(obj.transform);
         }
 
         void spawnObstacleRPRHR(GameObject prefab)
         {
-            GameObject obj = Instantiate<GameObject>(prefab, new Vector3(renderRange * 2, 0, Random.Range(0, renderRange)), Quaternion.LookRotation(new Vector3(0,Random.Range(0,359),0)), environment);
+            GameObject obj = Instantiate<GameObject>(prefab, new Vector3(renderRange * 2, 0, Random.Range(0, renderRange)), Quaternion.LookRotation(new Vector3(0, Random.Range(0, 359), 0)), environment);
             obstacles.Add(obj.transform);
         }
         void spawnObstacleRPRTR(GameObject prefab)
@@ -117,14 +121,25 @@ namespace nz.rishaan.DynamicCuboidTerrain
             {
                 --forback;
             }
-            if (forback != 0 || dir != 0) {
-                horRot.localRotation = Quaternion.RotateTowards(horRot.localRotation, Quaternion.LookRotation(new Vector3(dir, 0f, forback)), 500f* Time.deltaTime);
-                player.obj.transform.position += (pointer.position - boat.position).normalized * maxSpeed;
+
+
+            if (forback != 0 || dir != 0)
+            {
+                if (Turret.orthoCamera)
+                {
+                    horRot.localRotation = Quaternion.RotateTowards(horRot.localRotation, Quaternion.LookRotation(new Vector3(dir, 0f, forback)), 200f * Time.deltaTime);
+                    player.obj.transform.position += (pointer.position - boat.position).normalized * speed * Time.deltaTime;
+                }
+                else
+                {
+                    if (dir != 0) horRot.localRotation = Quaternion.RotateTowards(horRot.localRotation, Quaternion.LookRotation(horRot.localRotation * new Vector3(dir, 0f, 0f)), 200f * Time.deltaTime);
+                    if (forback != 0) player.obj.transform.position += (pointer.position - boat.position).normalized * speed * forback * Time.deltaTime;
+                }
             }
             //new Vector3(forback, 0f, -dir).normalized
 
         }
-    
+
         void add(Vector3 v)
         {
             int i = lastdirection.IndexOf(v);
@@ -187,6 +202,7 @@ namespace nz.rishaan.DynamicCuboidTerrain
 
         void Start()
         {
+            render = renderRange;
             lastdirection.Insert(0, new Vector3());
             player.position = new Vector3(renderRange, 0, renderRange);
             if (mapSize % 2 == 0) mapSize++;
@@ -254,7 +270,7 @@ namespace nz.rishaan.DynamicCuboidTerrain
                     //Debug.Log("y: " + map.heightMap[xShift + x,zShift + z]);
                     //float temp = Mathf.Abs(x + z - player.x - player.z);
                     //if (temp < 10) {
-                    float relHeight = (map.heightMap[-X / 2 + x + (int)(player.x), -Z / 2 + z + (int)player.z] - 0.5f)/2;
+                    float relHeight = (map.heightMap[-X / 2 + x + (int)(player.x), -Z / 2 + z + (int)player.z] - 0.5f) / 2;
                     //relHeight += Mathf.Clamp(temp,0,10);
                     float scale = Mathf.Max(relHeight - map.minHeight, minBlockSize);
                     relHeight = relHeight - 0.5f * scale;
@@ -283,7 +299,7 @@ namespace nz.rishaan.DynamicCuboidTerrain
             }
             //float y = player.obj.transform.position.y;
             //float dest = map.heightMap[-X / 2 + (int)(player.x) - (int)player.obj.transform.position.x, -Z / 2 + (int)player.z - (int)player.obj.transform.position.x];
-            
+
             //int loc = renderRange / 2;
             //player.obj.transform.position = new Vector3(loc, cuboids[loc, loc].position.y + 1, loc);
             //player.obj.transform.position = new Vector3(0,player.height + 1,0);
