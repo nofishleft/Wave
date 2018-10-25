@@ -22,14 +22,17 @@ namespace nz.Rishaan.DynamicCuboidTerrain
         {
             thruster = true;
             thruster_enabled_in_water = false;
-            thrust = 10f;
+            thrust = 20f;
             water_decel = 20f;
             speed = 20f;
         }
 
+        public Transform target;
+
         public void Update()
         {
             Vector3 v = transform.localPosition;
+            if (target != null) transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(target.transform.position - transform.position), 30f*Time.deltaTime);
             if (!collided && (thruster || in_water))
             {
                 if (in_water)
@@ -43,16 +46,28 @@ namespace nz.Rishaan.DynamicCuboidTerrain
             transform.localPosition = v;
 
         }
-
-        private void OnCollisionEnter(Collision collision)
+        /*
+        private void OnTriggerEnter(Collider other)
         {
-            if (collision.collider.gameObject.layer != Constants.LAYER_WATER && !collided) Destroy(this, Constants.DESPAWN_TIME_SHELL);
-            else in_water = true;
+            Debug.Log(3);
         }
 
-        private void OnCollisionExit(Collision collision)
+        private void OnTriggerStay(Collider other)
         {
-            if (collision.collider.gameObject.layer == Constants.LAYER_WATER) in_water = false;
+            print(4);
         }
+        /*
+        //private void OnCollisionEnter(Collision collision)
+        //{
+            /*
+            if (collision.gameObject.layer != Constants.LAYER_WATER && !collided) Destroy(this, Constants.DESPAWN_TIME_SHELL);
+            else in_water = true;*/
+        //}
+
+        //private void OnCollisionExit(Collision collision)
+        //{
+        //    if (collision.collider.gameObject.layer == Constants.LAYER_WATER) in_water = false;
+        //}
+        
     }
 }

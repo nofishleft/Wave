@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Constants {
-    public static int LAYER_GUI;
-    public static int LAYER_WATER = 8;
-    public static int LAYER_ENEMY;
-    public static int LAYER_OBJECT;
+    public const int LAYER_GUI = 0;
+    public const int LAYER_WATER = 8;
+    public const int LAYER_PROJECTILE_PLAYER = 9;
+    public const int LAYER_PROJECTILE_ENEMY = 10;
+    public const int LAYER_PLAYER = 11;
+    public const int LAYER_ENEMY = 12;
+    //public const int LAYER_OBJECT;
 
-    public static float DESPAWN_TIME_SHELL = 5f;
+    public const float DESPAWN_TIME_SHELL = 5f;
+
 }

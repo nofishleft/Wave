@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace nz.Rishaan.DynamicCuboidTerrain
 {
@@ -8,6 +9,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
     public class TRenderer : MonoBehaviour
     {
         public Player player;
+        public static Player p;
         public Transform cam;
         public TerrainMap map;
         public static Transform[,] cuboids; //Should always have odd dimensions
@@ -27,6 +29,9 @@ namespace nz.Rishaan.DynamicCuboidTerrain
 
         Vector3 desiredCamPos = new Vector3();
 
+        public static bool PAUSED = false;
+        public Text PauseText;
+
         public int mapSize;
         float accumTime;
         public static int render;
@@ -44,10 +49,22 @@ namespace nz.Rishaan.DynamicCuboidTerrain
 
         }
 
+        public static void OnDeath() {
+
+        }
+
         void Update()
         {
             //horRot.RotateAround(horRot.position, horRot.up, turnSpeed * Time.deltaTime);
             // move(dir);
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                PAUSED = !PAUSED;
+                PauseText.enabled = PAUSED;
+                if (PAUSED) Time.timeScale = 0f;
+                else Time.timeScale = 1f;
+            }
+            if (PAUSED) return;
             move2();
             accumTime += scrollSpeed * Time.deltaTime;
             map.procGen(mapSize, mapSize, player.x - 0.5f * renderRange + accumTime, player.z - 0.5f * renderRange);
@@ -202,6 +219,8 @@ namespace nz.Rishaan.DynamicCuboidTerrain
 
         void Start()
         {
+            //Time.fixedDeltaTime = 1f;
+            p = player;
             render = renderRange;
             lastdirection.Insert(0, new Vector3());
             player.position = new Vector3(renderRange, 0, renderRange);

@@ -8,6 +8,10 @@ namespace nz.Rishaan.DynamicCuboidTerrain
         public Vector3 position;
         public Vector3 gloPos;
         public GameObject obj;
+
+        public float Health;
+        public float MaxHealth;
+
         //public GameObject prefab;
         /*public float height
         {

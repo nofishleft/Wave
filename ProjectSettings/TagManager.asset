@@ -14,10 +14,10 @@ TagManager:
   - 
   - 
   - Terrain
-  - 
-  - 
-  - 
-  - 
+  - PlayerProjectile
+  - EnemyProjectile
+  - Player
+  - Enemy
   - 
   - 
   - 

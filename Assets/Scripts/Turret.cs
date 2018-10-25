@@ -14,14 +14,15 @@ public class Turret : MonoBehaviour {
     public static int currentAmmo = 2;
     public Text ammoText;
     public static bool orthoCamera = true;
-
+    public LayerMask mask;
+    public Transform target;
 
     public float barrelRotationVert {
         get {
             return barrel.transform.localRotation.eulerAngles.x;
         }
         set {
-            barrel.transform.localRotation = Quaternion.Euler(value,0,0);
+            barrel.transform.localRotation = Quaternion.RotateTowards(barrel.transform.localRotation, Quaternion.Euler(value, 0, 0), 360f * Time.deltaTime);
         }
     }
 
@@ -33,7 +34,7 @@ public class Turret : MonoBehaviour {
         }
         set
         {
-            transform.rotation = Quaternion.Euler(0, value, 0);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, value, 0), 360f * Time.deltaTime);
         }
     }
 
@@ -49,6 +50,7 @@ public class Turret : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (TRenderer.PAUSED) return;
         if (Input.GetKeyDown(KeyCode.V)) {
             orthoCamera = !orthoCamera;
             OrthographicCamera.gameObject.SetActive(orthoCamera);
@@ -60,44 +62,60 @@ public class Turret : MonoBehaviour {
         {
             currentAmmo = 0;
             ammoText.text = "Current Ammo: \nShell";
+            target = null;
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             currentAmmo = 1;
-            ammoText.text = "Current Ammo: \nThruster";
+            ammoText.text = "Current Ammo: \nHoming Missile";
+            target = null;
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             currentAmmo = 2;
             ammoText.text = "Current Ammo: \nTorpedo";
+            target = null;
         }
         //Modify local rotation so that .rotation returns rotation relative to world
-        if (Input.GetMouseButtonDown(0)) Fire();
-
+        
         //RayCast to terrain
         RaycastHit hit = new RaycastHit();
-        int mask = 1 << 8;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        Physics.Raycast(ray, out hit, Mathf.Infinity);
+        if (currentAmmo == 1)
+        {
+            Physics.Raycast(ray, out hit, Mathf.Infinity);
+        }
+        else if (currentAmmo == 0) Physics.Raycast(ray, out hit, Mathf.Infinity/*, ~mask.value*/);
+        else Physics.Raycast(ray, out hit, Mathf.Infinity, ~mask.value);
         //Physics.Raycast(cam.transform.position, cam.transform.rotation.eulerAngles, out hit, Mathf.Infinity, mask);
+        Debug.Log(hit.collider);
         if (hit.collider != null) {
+            Vector3 dest = hit.collider.gameObject.transform.position;
+            //print(hit.collider.gameObject.layer);
             switch (hit.collider.gameObject.layer) {
                 case 0:
                 //case gui:
                     
                     break;
                 case 8:
-                    Vector3 dest = hit.collider.gameObject.transform.position;
                     dest.y += hit.collider.gameObject.transform.localScale.y/2 + 1f;
-                    Quaternion q = Quaternion.LookRotation(dest - barrel.transform.position, Vector3.up);
-                    barrelRotationVert = Mathf.Clamp(-90f - q.eulerAngles.x,-105f,-61f);
-                    barrelRotationHor = 180f + q.eulerAngles.y;
                     //Vector3.RotateTowards(barrel.transform.rotation.eulerAngles, hit.collider.gameObject.transform.position - barrel.transform.position);
+                    break;
+                case 12:
+                    target = hit.collider.transform;
                     break;
                 default:
                     break;
             }
+            Quaternion q = Quaternion.LookRotation(dest - barrel.transform.position, Vector3.up);
+            
+            //print(q.eulerAngles);
+            if (q.eulerAngles.x > 200) barrelRotationVert = -90f - q.eulerAngles.x;
+            else barrelRotationVert = Mathf.Clamp(-90f - q.eulerAngles.x, -105f, -61f);
+            barrelRotationHor = 180f + q.eulerAngles.y;
+            if (Input.GetMouseButtonDown(0)) Fire();
         }
+       
     }
 
     public GameObject shell;
@@ -121,8 +139,14 @@ public class Turret : MonoBehaviour {
         }
         float ang = transform.localEulerAngles.y;
         Vector3 rot = barrelEnd.transform.position - barrel.transform.position;
-        rot.y = 0;
-        if ((ang <= 45 && ang >= 0) || (ang <= 360 && ang >= 135)) Instantiate(o, barrelEnd.transform.position, Quaternion.LookRotation(rot));
-        
+        if (o != thruster) rot.y = 0;
+        if ((ang <= 45 && ang >= 0) || (ang <= 360 && ang >= 135))
+        {
+            GameObject ob = Instantiate(o, barrelEnd.transform.position, Quaternion.LookRotation(rot));
+            ob.layer = 9;
+            if (currentAmmo == 1) {
+                ob.GetComponent<Thruster>().target = target;
+            }
+        }
     }
 }
