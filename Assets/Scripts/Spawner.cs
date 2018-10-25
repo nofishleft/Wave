@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using nz.Rishaan.DynamicCuboidTerrain;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ public class Spawner : MonoBehaviour
     int EnemyPerWave;
     float EnemyHPModifier;
     float EnemyDamageModifier;
+    public GameObject BalloonPrefab;
+    public Transform Target;
 
     public static void RemoveEnemy(Enemy e)
     {
@@ -30,6 +33,8 @@ public class Spawner : MonoBehaviour
     void Start()
     {
         EnemyPerWave = 1;
+        EnemyCount = 1;
+        EnemiesLeftToSpawn = 1;
         EnemyHPModifier = 1f;
         EnemyDamageModifier = 1f;
         Enemies = new List<Enemy>();
@@ -39,12 +44,10 @@ public class Spawner : MonoBehaviour
     void Update()
     {
         accumTime += Time.deltaTime;
-        if (EnemyCount == 0)
-        {
-            if (EnemiesLeftToSpawn == 0)
+        if (EnemyCount == 0 && EnemiesLeftToSpawn == 0)
             {
                 ++Wave;
-                switch (Random.Range(0, 3)) {
+                switch (Random.Range(0, 5)) {
                     case 0:
                         ++EnemyPerWave;
                         break;
@@ -52,19 +55,36 @@ public class Spawner : MonoBehaviour
                         EnemyHPModifier *= 1.1f;
                         break;
                     case 2:
+                        EnemyHPModifier *= 1.1f;
+                        break;
+                    case 3:
                         EnemyDamageModifier *= 1.1f;
                         break;
-                }
-                EnemiesLeftToSpawn = EnemyPerWave;
-                accumTime = 0;
+                    case 4:
+                        EnemyDamageModifier *= 1.1f;
+                        break;
             }
-        }
-        else if (accumTime >= 2)
+                EnemiesLeftToSpawn = EnemyPerWave;
+                accumTime = -3;
+            }
+        if (accumTime >= 2 && EnemiesLeftToSpawn > 0)
         {
             Spawn();
+            --EnemiesLeftToSpawn;
             accumTime = 0;
         }
     }
 
-    void Spawn() { }
+    void Spawn() {
+        Enemy e = Instantiate(BalloonPrefab).GetComponentInChildren<Balloon>();
+        e.Target = Target;
+        e.MaxHealth *= EnemyHPModifier;
+        e.Health *= EnemyHPModifier;
+        e.Damage *= EnemyDamageModifier;
+        Vector3 circ = Random.insideUnitCircle * (TRenderer.render / 4);
+        circ.z = circ.y;
+        circ.y = 0;
+        e.transform.parent.position = new Vector3(TRenderer.render/2, e.transform.parent.position.y, TRenderer.render/2) + circ;
+        AddEnemy(e);
+    }
 }

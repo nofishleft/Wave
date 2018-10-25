@@ -16,6 +16,8 @@ namespace nz.Rishaan.DynamicCuboidTerrain
         public bool in_water = false;
         public float speed = 20f;
 
+        public float damage = 60f;
+
         public float offset = 0f;
 
         private void Start()

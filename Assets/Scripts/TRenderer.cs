@@ -144,7 +144,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
             {
                 if (Turret.orthoCamera)
                 {
-                    horRot.localRotation = Quaternion.RotateTowards(horRot.localRotation, Quaternion.LookRotation(new Vector3(dir, 0f, forback)), 200f * Time.deltaTime);
+                    horRot.localRotation = Quaternion.RotateTowards(horRot.localRotation, Quaternion.LookRotation(new Vector3(dir - forback, 0f, dir + forback)), 200f * Time.deltaTime);
                     player.obj.transform.position += (pointer.position - boat.position).normalized * speed * Time.deltaTime;
                 }
                 else

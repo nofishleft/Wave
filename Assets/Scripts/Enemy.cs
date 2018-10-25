@@ -3,31 +3,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour {
+public class Enemy : MonoBehaviour
+{
 
-    public float MaxHealth;
-    public float Health;
-    public float MovementSpeed;
+    public float MaxHealth = 100;
+    public float Health = 100;
+    public float MovementSpeed = 100f;
+    public float Damage = 60f;
     public float PlayerProjectilleDamage;
     public float PlayerCollisionDamage;
-    public Transform Player;
+    public Transform Target;
+    public static Transform targ;
+    public float FireRate = 1f;
+    public float FireWait = -1f;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-        //Move();
-	}
-
-    
-    public virtual void Move() {
+    // Use this for initialization
+    void Start()
+    {
         
     }
 
-    public virtual void OnDeath() {
+    public virtual void OnStart()
+    {
+
+    }
+
+    public virtual void OnDeath()
+    {
 
     }
 
@@ -54,8 +56,11 @@ public class Enemy : MonoBehaviour {
             default:
                 break;
         }
-        print(1);
     }
-            
+
+    public void Path()
+    {
+        
+    }
 
 }

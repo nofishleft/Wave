@@ -88,7 +88,6 @@ public class Turret : MonoBehaviour {
         else if (currentAmmo == 0) Physics.Raycast(ray, out hit, Mathf.Infinity/*, ~mask.value*/);
         else Physics.Raycast(ray, out hit, Mathf.Infinity, ~mask.value);
         //Physics.Raycast(cam.transform.position, cam.transform.rotation.eulerAngles, out hit, Mathf.Infinity, mask);
-        Debug.Log(hit.collider);
         if (hit.collider != null) {
             Vector3 dest = hit.collider.gameObject.transform.position;
             //print(hit.collider.gameObject.layer);

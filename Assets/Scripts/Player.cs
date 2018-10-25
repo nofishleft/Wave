@@ -8,7 +8,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
         public Vector3 position;
         public Vector3 gloPos;
         public GameObject obj;
-
+        public static GameObject GetObj;
         public float Health;
         public float MaxHealth;
 
@@ -18,6 +18,11 @@ namespace nz.Rishaan.DynamicCuboidTerrain
             get { return position.y; }
             set { position.y = value; }
         }*/
+        private void Start()
+        {
+            GetObj = obj;
+        }
+
         public float height
         {
             get { return position.y; }
