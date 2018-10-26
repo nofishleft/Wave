@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour {
 
     public float Health;
     public float MaxHealth;
+    public Text PauseText;
 
 	// Use this for initialization
 	void Start () {
@@ -21,11 +23,11 @@ public class PlayerHealth : MonoBehaviour {
     void OnDeath() {
         TRenderer.PAUSED = true;
         Time.timeScale = 0f;
+        PauseText.enabled = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        print(1);
         int layer = other.gameObject.layer;
         switch (layer)
         {
