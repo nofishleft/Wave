@@ -16,6 +16,8 @@ public class Turret : MonoBehaviour {
     public static bool orthoCamera = true;
     public LayerMask mask;
     public Transform target;
+    public GameObject EffectPrefab;
+    public Plane plane;
 
     public float barrelRotationVert {
         get {
@@ -46,10 +48,12 @@ public class Turret : MonoBehaviour {
         ammoText.text = "Current Ammo: \nShell";
         if (orthoCamera) cam = OrthographicCamera;
         else cam = PerspectiveCamera;
+        plane = new Plane(Vector3.up, new Vector3(51,2,51));
     }
 	
 	// Update is called once per frame
 	void Update () {
+        if (PlayerHealth.dead) return;
         if (TRenderer.PAUSED) return;
         if (Input.GetKeyDown(KeyCode.V)) {
             orthoCamera = !orthoCamera;
@@ -81,30 +85,18 @@ public class Turret : MonoBehaviour {
         //RayCast to terrain
         RaycastHit hit = new RaycastHit();
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        if (currentAmmo == 1)
-        {
-            Physics.Raycast(ray, out hit, Mathf.Infinity);
-        }
-        else if (currentAmmo == 0) Physics.Raycast(ray, out hit, Mathf.Infinity/*, ~mask.value*/);
-        else Physics.Raycast(ray, out hit, Mathf.Infinity, ~mask.value);
+        Physics.Raycast(ray, out hit, Mathf.Infinity);
         //Physics.Raycast(cam.transform.position, cam.transform.rotation.eulerAngles, out hit, Mathf.Infinity, mask);
         if (hit.collider != null) {
             Vector3 dest = hit.collider.gameObject.transform.position;
             //print(hit.collider.gameObject.layer);
-            switch (hit.collider.gameObject.layer) {
-                case 0:
-                //case gui:
-                    
-                    break;
-                case 8:
-                    dest.y += hit.collider.gameObject.transform.localScale.y/2 + 1f;
-                    //Vector3.RotateTowards(barrel.transform.rotation.eulerAngles, hit.collider.gameObject.transform.position - barrel.transform.position);
-                    break;
-                case 12:
-                    target = hit.collider.transform;
-                    break;
-                default:
-                    break;
+            if (hit.collider.gameObject.layer == 12)
+                target = hit.collider.transform;
+            else {
+                float enter;
+                if (plane.Raycast(ray, out enter)) {
+                    dest = ray.GetPoint(enter);
+                }
             }
             Quaternion q = Quaternion.LookRotation(dest - barrel.transform.position, Vector3.up);
             
@@ -143,9 +135,18 @@ public class Turret : MonoBehaviour {
         {
             GameObject ob = Instantiate(o, barrelEnd.transform.position, Quaternion.LookRotation(rot));
             ob.layer = 9;
-            if (currentAmmo == 1) {
-                ob.GetComponent<Thruster>().target = target;
+            if (currentAmmo == 1)
+            {
+                Thruster t = ob.GetComponent<Thruster>();
+                t.target = target;
+                t.Eff = Instantiate(EffectPrefab, barrelEnd.transform.position, Quaternion.Euler(0, 15, 0) * Quaternion.LookRotation(rot));
             }
+            else if (currentAmmo == 0) {
+                Shell t = ob.GetComponent<Shell>();
+                t.Eff = Instantiate(EffectPrefab, barrelEnd.transform.position, Quaternion.Euler(0, 15, 0) * Quaternion.LookRotation(rot));
+            }
+            
         }
+        
     }
 }

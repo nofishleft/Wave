@@ -14,6 +14,7 @@ public class Balloon : Enemy {
     float rotation = 360f;
     bool dead;
     public GameObject o;
+    public GameObject EffectPrefab;
 
     public float barrelRotationVert
     {
@@ -43,6 +44,7 @@ public class Balloon : Enemy {
     {
         if (rotating && !dead)
         {
+            if (PlayerHealth.dead) return;
             FireWait += Time.deltaTime;
             Quaternion q = Quaternion.LookRotation(Target.position - Barrel.transform.position);
             barrelRotationHor = q.eulerAngles.y;
@@ -50,9 +52,10 @@ public class Balloon : Enemy {
             if (FireWait >= FireRate) {
                 Vector3 rot = ProjectileSpawner.position - Barrel.position;
                 GameObject ob = Instantiate(o, ProjectileSpawner.position, Quaternion.LookRotation(rot));
-                ob.layer = 10;
-                Thruster t = ob.GetComponentInChildren<Thruster>();
+                ob.layer = Constants.LAYER_PROJECTILE_ENEMY;
+                Thruster t = ob.GetComponent<Thruster>();
                 t.target = Target;
+                t.Eff = Instantiate(EffectPrefab, ProjectileSpawner.position, Quaternion.Euler(0, 15, 0) * Quaternion.LookRotation(rot));
                 t.damage = Damage;
                 FireWait = 0;
             }

@@ -7,7 +7,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
 
     public class Shell : MonoBehaviour
     {
-
+        public GameObject Eff;
         public bool collided = false;
         public bool thruster = true;
         public bool thruster_enabled_in_water = true;

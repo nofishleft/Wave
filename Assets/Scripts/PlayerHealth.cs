@@ -1,4 +1,5 @@
-﻿using nz.Rishaan.DynamicCuboidTerrain;
+﻿using BeautifulDissolves;
+using nz.Rishaan.DynamicCuboidTerrain;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,8 @@ public class PlayerHealth : MonoBehaviour {
     public float Health;
     public float MaxHealth;
     public Text PauseText;
+    public static bool dead = false;
+    public Text Wa;
 
 	// Use this for initialization
 	void Start () {
@@ -21,9 +24,18 @@ public class PlayerHealth : MonoBehaviour {
 	}
 
     void OnDeath() {
-        TRenderer.PAUSED = true;
+        if (!dead) {
+            dead = true;
+            WaveText.Wave = Wa.text;
+            SceneSwitcher.Credits();
+            foreach (Dissolve dissolve in transform.parent.GetComponentsInChildren<Dissolve>()) {
+                dissolve.TriggerDissolve();
+            }
+        }
+        /*TRenderer.PAUSED = true;
         Time.timeScale = 0f;
-        PauseText.enabled = true;
+        PauseText.enabled = true;*/
+        
     }
 
     private void OnTriggerEnter(Collider other)

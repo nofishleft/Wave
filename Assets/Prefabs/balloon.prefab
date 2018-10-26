@@ -305,7 +305,7 @@ MonoBehaviour:
   Health: 100
   MovementSpeed: 0
   Damage: 60
-  PlayerProjectilleDamage: 60
+  PlayerProjectilleDamage: 100
   PlayerCollisionDamage: 0
   Target: {fileID: 0}
   FireRate: 3
@@ -315,3 +315,5 @@ MonoBehaviour:
   one: {fileID: 114963533431608052}
   two: {fileID: 114683493875848738}
   o: {fileID: 1305562384379898, guid: 00413d728efa94042b54bbd8d1c7678b, type: 2}
+  EffectPrefab: {fileID: 1629882570172640, guid: dc5629707c9321345b764072df2e33c3,
+    type: 2}

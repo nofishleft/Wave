@@ -50,7 +50,7 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1305562384379898}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -124,6 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca00910e44f11fd4c8c36d84b4a7a33d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Eff: {fileID: 0}
   collided: 0
   thruster: 1
   thruster_enabled_in_water: 1
@@ -131,5 +132,6 @@ MonoBehaviour:
   water_decel: 1
   in_water: 0
   speed: 20
+  damage: 60
   offset: 0
   target: {fileID: 0}

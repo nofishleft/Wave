@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace nz.Rishaan.DynamicCuboidTerrain
@@ -57,6 +58,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
         {
             //horRot.RotateAround(horRot.position, horRot.up, turnSpeed * Time.deltaTime);
             // move(dir);
+            /*
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 PAUSED = !PAUSED;
@@ -64,7 +66,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
                 if (PAUSED) Time.timeScale = 0f;
                 else Time.timeScale = 1f;
             }
-            if (PAUSED) return;
+            if (PAUSED) return;*/
             move2();
             accumTime += scrollSpeed * Time.deltaTime;
             map.procGen(mapSize, mapSize, player.x - 0.5f * renderRange + accumTime, player.z - 0.5f * renderRange);
@@ -116,6 +118,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
 
         void move2()
         {
+            if (PlayerHealth.dead) return;
             int dir = 0;
             Vector3 v = horRot.localEulerAngles;
             if (Input.GetKey(KeyCode.A))
@@ -219,8 +222,9 @@ namespace nz.Rishaan.DynamicCuboidTerrain
 
         void Start()
         {
-            //Time.fixedDeltaTime = 1f;
-            p = player;
+            if (PlayerHealth.dead) PlayerHealth.dead = false;
+                //Time.fixedDeltaTime = 1f;
+                p = player;
             render = renderRange;
             lastdirection.Insert(0, new Vector3());
             player.position = new Vector3(renderRange, 0, renderRange);

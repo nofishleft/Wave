@@ -7,14 +7,16 @@ namespace nz.Rishaan.DynamicCuboidTerrain
 
     public class Thruster : MonoBehaviour
     {
+        public GameObject Eff;
 
         public bool collided = false;
-        public bool thruster = true;
+        public bool thruster = false;
         public bool thruster_enabled_in_water = true;
         public float thrust = 1f;
         public float water_decel = 1f;
         public bool in_water = false;
         public float speed = 20f;
+        RFX4_TransformMotion rf;
 
         public float damage = 60f;
 
@@ -22,11 +24,8 @@ namespace nz.Rishaan.DynamicCuboidTerrain
 
         private void Start()
         {
-            thruster = true;
-            thruster_enabled_in_water = false;
-            thrust = 20f;
-            water_decel = 20f;
-            speed = 20f;
+            rf = Eff.GetComponentInChildren<RFX4_TransformMotion>();
+            speed = 30f;
         }
 
         public Transform target;
