@@ -44,7 +44,7 @@ public class RFX4_CameraShake : MonoBehaviour
     IEnumerator Shake()
     {
         var elapsed = 0.0f;
-        var camT = Camera.main.transform;
+        var camT = Turret.cam.transform;//Camera.current.transform;
         var originalCamRotation = camT.rotation.eulerAngles;
         var direction = (transform.position - camT.position).normalized;
         var time = 0f;

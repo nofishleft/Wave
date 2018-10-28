@@ -8,7 +8,7 @@ public class Turret : MonoBehaviour {
 
     public GameObject barrel;
     public GameObject barrelEnd;
-    Camera cam;
+    public static Camera cam;
     public Camera OrthographicCamera;
     public Camera PerspectiveCamera;
     public static int currentAmmo = 2;

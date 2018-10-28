@@ -12,15 +12,16 @@ public class PlayerHealth : MonoBehaviour {
     public Text PauseText;
     public static bool dead = false;
     public Text Wa;
+    public static PlayerHealth a;
 
 	// Use this for initialization
+
 	void Start () {
-		
+        a = this;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
 
     void OnDeath() {

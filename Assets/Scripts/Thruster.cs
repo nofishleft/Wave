@@ -26,6 +26,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
         {
             rf = Eff.GetComponentInChildren<RFX4_TransformMotion>();
             speed = 30f;
+            //Destroy(this.GetComponent<MeshFilter>());
         }
 
         public Transform target;
@@ -47,6 +48,7 @@ namespace nz.Rishaan.DynamicCuboidTerrain
             transform.localPosition = v;
 
         }
+
         /*
         private void OnTriggerEnter(Collider other)
         {
@@ -69,6 +71,6 @@ namespace nz.Rishaan.DynamicCuboidTerrain
         //{
         //    if (collision.collider.gameObject.layer == Constants.LAYER_WATER) in_water = false;
         //}
-        
+
     }
 }

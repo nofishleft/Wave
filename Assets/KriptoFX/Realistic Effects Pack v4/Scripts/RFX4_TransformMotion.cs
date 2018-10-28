@@ -67,11 +67,6 @@ public class RFX4_TransformMotion : MonoBehaviour
       
     }
 
-    public void Change(Quaternion q) {
-        startQuaternion = q;
-        t.localRotation = q;
-    }
-
     void Update()
     {
         if (!dropFirstFrameForFixUnityBugWithParticles)

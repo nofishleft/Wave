@@ -58,7 +58,7 @@ public class Spawner : MonoBehaviour
         {
             ++Wave;
             WaveText.text = "Wave: " + Wave;
-            switch (Random.Range(0, 5))
+            switch (Random.Range(0, 3))
             {
                 case 0:
                     ++EnemyPerWave;
@@ -66,13 +66,7 @@ public class Spawner : MonoBehaviour
                 case 1:
                     EnemyHPModifier *= 1.1f;
                     break;
-                case 2:
-                    EnemyHPModifier *= 1.1f;
-                    break;
                 case 3:
-                    EnemyDamageModifier *= 1.1f;
-                    break;
-                case 4:
                     EnemyDamageModifier *= 1.1f;
                     break;
             }

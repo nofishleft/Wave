@@ -53,20 +53,26 @@ namespace nz.Rishaan.DynamicCuboidTerrain
         public static void OnDeath() {
 
         }
+        private void LateUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                PAUSED = !PAUSED;
+                PauseText.enabled = PAUSED;
+                if (PAUSED)
+                {
+                    Time.timeScale = 0f;
+                }
+                else Time.timeScale = 1f;
+            }
+        }
 
         void Update()
         {
             //horRot.RotateAround(horRot.position, horRot.up, turnSpeed * Time.deltaTime);
             // move(dir);
-            /*
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                PAUSED = !PAUSED;
-                PauseText.enabled = PAUSED;
-                if (PAUSED) Time.timeScale = 0f;
-                else Time.timeScale = 1f;
-            }
-            if (PAUSED) return;*/
+            
+            if (PAUSED) return;
             move2();
             accumTime += scrollSpeed * Time.deltaTime;
             map.procGen(mapSize, mapSize, player.x - 0.5f * renderRange + accumTime, player.z - 0.5f * renderRange);
